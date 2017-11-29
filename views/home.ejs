@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="javascripts/home.js"></script>
+</head>
+    <body>
+        <p>congrats login was successful, you're now at the homepage</p>
+        <form id='edit_user'>
+        <h2>Edit user info:</h2>
+        please insert your current username here: 
+        <br><input id="orig_username" type="text", autocomplete="off"><br>
+        <p>this is what you want to change:</p>
+            First Name: <br><input id= 'edit_firstName' type="text", autocomplete="off"><br>
+            <!-- Last Name: <br><input id= 'lastName' type="text", autocomplete="off" ><br> -->
+            <input id= 'editUser' type = "submit">
+        </form>
+        <p>output<span id="edit_msg"></span></p>
+        <br>
+        <h1> Delete an existing user here</h1>
+        <form id="delete_user">
+            username: <br><input id= 'deleted_username' type="text", autocomplete="off"><br>
+            <input id= 'deleteUser' type = "submit">
+        </form>
+        <p><span id="delete_msg"></span></p>
+
+    </body>
+</html>

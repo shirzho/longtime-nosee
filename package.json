@@ -1,0 +1,19 @@
+{
+  "name": "long_time_no_see",
+  "description": "Example of socket.io use",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "version": "0.0.1-2",
+  "engines": {
+    "node": ">=0.10"
+  },
+  "dependencies": {
+    "bootstrap": "^4.0.0-alpha.6",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2",
+    "mongodb": "^2.2.33",
+    "morgan": "^1.4.1",
+    "socket.io": "^2.0.4"
+  }
+}
