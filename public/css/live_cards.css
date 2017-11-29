@@ -1,4 +1,4 @@
-#overlay {
+#overlay_screen {
     position: fixed;
     display: none;
     width: 100%;
@@ -12,11 +12,11 @@
     cursor: pointer;
 }
 
-#text{
+#overlay{
     position: absolute;
-    top: 50%;
+    top: 30%;
     left: 50%;
-    font-size: 20px;
+    font-size: 15px;
     color: white;
     transform: translate(-50%,-50%);
     -ms-transform: translate(-50%,-50%);

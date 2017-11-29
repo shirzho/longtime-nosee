@@ -11,10 +11,9 @@ exports.init = function(io) {
         socket.emit('welcome', {welcome_msg: "Welcome user, "+currentPlayers});
 
 
-        socket.on( 'broadcast', function(data){
-            msg = data.message;
-            socket.broadcast.emit(data.emitName, {message: msg});
-            socket.emit('user_message', {message: msg});
+        socket.on( 'sending_chat', function(txt){
+            socket.broadcast.emit('sending_chat', txt);
+            socket.emit('sending_chat', txt);
         });
         
         socket.on('live_write', function(data){

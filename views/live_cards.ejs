@@ -12,16 +12,17 @@
     <p> There are currently <span id="numPlayers">no other</span> users online.</p>
     <p>  <span id="welcome"></span></p>
 
-    <textarea id="card" rows ="15" cols = "30" placeholder="pressing enter sends the text you wrote live to other users"></textarea> 
+    <textarea id="card" rows ="15" cols = "30" placeholder="pressing spacebar sends the text you wrote live to other users"></textarea> 
     <br>
     <button id= 'save'>save card</button>
 
-    <div id="overlay">
-        <div id="text">
-            Overlay Text
-            <br>
+    <div id="overlay_screen">
+        <div id="overlay">
+            <p id="message"></p>
             <input id= 'chatbox' type = "text", autocomplete="off">
             <button id= 'sendchat'>send</button>
+            <br>
+            <button id="quit">close</button>
         </div>
         
         <!-- <input id= 'chatbox' type = "text", autocomplete="off"> -->
