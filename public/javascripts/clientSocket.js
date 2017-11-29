@@ -25,6 +25,12 @@ $(function () {
         socket.emit('live_write', {text: writing});
     }
   }); 
+  $("#chat").click(function(){
+    document.getElementById("overlay").style.display = "block";
+  });
+  $("#sendchat").click(function(){
+    document.getElementById("overlay").style.display = "none";
+  });
 
 });
 

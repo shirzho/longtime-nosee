@@ -4,19 +4,29 @@
     <script src="../socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="javascripts/clientSocket.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/live_cards.css">
+
 
 </head>
 <body>
     <p> There are currently <span id="numPlayers">no other</span> users online.</p>
     <p>  <span id="welcome"></span></p>
 
-
-
-    <!-- <form id = "card"> -->
-
     <textarea id="card" rows ="15" cols = "30" placeholder="pressing enter sends the text you wrote live to other users"></textarea> 
     <br>
     <button id= 'save'>save card</button>
-    <!-- </form> -->
+
+    <div id="overlay">
+        <div id="text">
+            Overlay Text
+            <br>
+            <input id= 'chatbox' type = "text", autocomplete="off">
+            <button id= 'sendchat'>send</button>
+        </div>
+        
+        <!-- <input id= 'chatbox' type = "text", autocomplete="off"> -->
+        
+    </div>
+    <button id='chat'>chat!</button>
 </body>
 </html>
