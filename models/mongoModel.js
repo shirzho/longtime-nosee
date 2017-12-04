@@ -1,5 +1,5 @@
 var mongoClient = require('mongodb').MongoClient;
-
+var bcrypt = require('bcryptjs'); //used for encrypting password
 /*
  * This connection_string is for mongodb running locally.
  * Change nameOfMyDb to reflect the name you want for your database
@@ -24,9 +24,9 @@ var blah = 'mongodb://shirley:shirley@ds155820.mlab.com:55820/longtimenosee'
 var mongoDB; 
 
 mongoClient.connect(connection_string, function(err, db) {
-    if (err) doError(err);
-    console.log("Connected to MongoDB server at: "+connection_string);
-    mongoDB = db; // Make reference to db globally available.
+  if (err) doError(err);
+  console.log("Connected to MongoDB server at: "+connection_string);
+  mongoDB = db; // Make reference to db globally available.
 });
 
 /********** CRUD Create -> Mongo insert ***************************************
@@ -39,17 +39,21 @@ mongoClient.connect(connection_string, function(err, db) {
  */
 
 exports.create = function(collection, data, callback) {
-
+  if (collection == "users") {
+    var salt = bcrypt.genSaltSync(10);
+    var hash = bcrypt.hashSync(data.password, salt);
+    data.password = hash;
+  }
   // Do an asynchronous insert into the given collection
-    mongoDB.collection(collection).insertOne(
-    data,                     // the object to be inserted
-    function(err, status) {   // callback upon completion
-      if (err) doError(err);
-      // use the callback function supplied by the controller to pass
-      // back true if successful else false
-      var success = (status.result.n == 1 ? true : false);
-      callback(success);
-    });
+  mongoDB.collection(collection).insertOne(
+  data,                     // the object to be inserted
+  function(err, status) {   // callback upon completion
+    if (err) doError(err);
+    // use the callback function supplied by the controller to pass
+    // back true if successful else false
+    var success = (status.result.n == 1 ? true : false);
+    callback(success);
+  });
 }
 
 /********** CRUD Retrieve -> Mongo find ***************************************
@@ -68,22 +72,38 @@ exports.retrieve = function(collection, query, callback) {
    * iteration does the actual retrieve. toArray asynchronously retrieves the
    * whole result set and returns an array.
    */
+  if (collection == "users") {
+    var user = query.username;
+    var search = {};
+    search.username = user;
+    //First, search for users with entered username
+    mongoDB.collection(collection).find(search).toArray(function(err, docs) {
+      //If no users found, callback empty []
+      if (docs.length == 0) {
+        callback(docs);
+      }
+      //If users found (should only be 1 user since username is unique!), check if password matches hash password
+      else {
+        var password = docs[0].password;
+        var match = bcrypt.compareSync(query.password, password);
+        if (match == true) {
+          callback(docs);
+        }
+        else {
+          callback([]);
+        }
+      }
+    });
+  }
+  else{
     mongoDB.collection(collection).find(query).toArray(function(err, docs) {
         if (err) doError(err);
         console.log("docs"+JSON.stringify(docs));
         // docs are MongoDB documents, returned as an array of JavaScript objects
         // Use the callback provided by the controller to send back the docs.
         callback(docs);
-  });
-}
-
-exports.retrieveAll = function(collection, callback) {
-  mongoDB.collection(collection).find().sort( { score: -1 } ).toArray(function(err, docs) {
-    if (err) doError(err);
-    // docs are MongoDB documents, returned as an array of JavaScript objects
-    // Use the callback provided by the controller to send back the docs.
-    callback(docs);
-  });
+    });
+  }
 }
 
 /********** CRUD Update -> Mongo updateMany ***********************************
@@ -133,8 +153,8 @@ exports.delete = function(collection, data, callback) {
 }
 
 var doError = function(e) {
-        console.error("ERROR: " + e);
-        throw new Error(e);
+  console.error("ERROR: " + e);
+  throw new Error(e);
 }
 
 

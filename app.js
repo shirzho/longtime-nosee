@@ -7,6 +7,7 @@ var app = express();
 var fs = require('fs');
 var path = require('path');
 var bodyParser = require('body-parser');
+var session = require("client-sessions");
 
 // Set the views directory
 app.set('views', __dirname + '/views');
@@ -14,12 +15,15 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'ejs');
 // Log requests
 app.use(morgan('tiny'));
+//sessions
+app.use(session({
+    cookieName: 'session', // cookie name dictates the key name added to the request object
+    secret: 'ASDfd223lasdF2k9S2;l!2asd;af)O', // should be a large unguessable string
+    duration: 24 * 60 * 60 * 1000, // how long the session will stay valid in ms
+    activeDuration: 1000 * 60 * 5 // if expiresIn < activeDuration, session will be extended by activeDuration milliseconds
+}));
 
-
-
-
-// This is where your normal app.get, app.put, etc middleware would go.
-
+// app.use(expressSessions)
 // parse application/x-www-form-urlencoded, with extended qs library
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -38,31 +42,14 @@ app.use(express.static(__dirname + '/public'));
 app.use(function(req, res) {
     var message = 'Error, did not understand path '+req.path;
     // Set the status to 404 not found, and render a message to the user.
-  res.status(404).render('error', { 'message': message });
+    res.status(404).render('error', { 'message': message });
 });
 
-/* 
- * This section is pretty typical for setting up socket.io.
- *
- * 1) it is necessary to link socket.io to the same http-layer
- * server that Express is running in.  In other words, you can think
- * of Express as a higher-level server running on a lower-level
- * http layer.  You need to get a reference to that http-layer server
- * (the variable httpServer) that Express is using (variable app).
- *
- * 2) Then require socket.io
- * 3) Give socket.io the reference to the same the underlying http server
- * that  Express is using.
- * 4) Start the httpServer listening for both Express and socket.io
- *
- * This can be essentially reused as boilerplate for setting up socket.io
- * alongside Express.
- */
 
-/*1*/ var httpServer = http.Server(app);
-/*2*/ var sio =require('socket.io');
-/*3*/ var io = sio(httpServer);
-/*4*/ httpServer.listen(50000, function() {console.log('Listening on 50000');});
+var httpServer = http.Server(app);
+var sio =require('socket.io');
+var io = sio(httpServer);
+httpServer.listen(50000, function() {console.log('Listening on 50000');});
 
 require('./sockets/serverSocket.js').init(io);
 

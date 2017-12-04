@@ -16,10 +16,16 @@ exports.init = function(app){
 
 
 
-/********** static page routes *******************************************************
+/********** page routes *******************************************************
  */ 
 index = function(req,res){
-  res.render('index');
+  //console.log(req.session.user);
+  if ( req.session.user == undefined) {
+    res.render('index', { username: false } );
+  }
+  else {
+    res.render('index', { username: req.session.user } );
+  }
 };
 // login = function(req, res){
 //   res.redirect('/home');
