@@ -2,45 +2,78 @@
 var mongoModel = require('../models/mongoModel.js');
 
 exports.init = function(app){
+    var passport = app.get('passport');
+
     app.get('/', index); // The login page currently, misleading name lol
-    app.get('/home', home); //the landing page after login
+    //app.get('/home', home); //the landing page after login
     app.get('/live_cards', live_cards);
+    // app.get('/login',function(req, res){
+    //   res.render('login');
+    // });
+    app.get('/favicon.ico', function(req, res) {
+      res.status(204);
+    });
+    
+    // app.post('/login',
+    //       passport.authenticate('local', {
+    //                               failureRedirect: '/login.html',
+    //                               successRedirect: '/home'}));
 
 
     // The collection parameter maps directly to the mongoDB collection
-    app.put('/:collection', doCreate); // CRUD Create
-    app.get('/:collection', doRetrieve); // CRUD Retrieve
-    app.post('/:collection', doUpdate); // CRUD Update
-    app.delete('/:collection', doDelete); // CRUD Delete
+    app.put('/users', doCreate); // CRUD Create
+    app.get('/users', doRetrieve); // CRUD Retrieve
+    app.post('/users', doUpdate); // CRUD Update
+    app.delete('/users', doDelete); // CRUD Delete
+
+    
+
+
 };
 
+/********** passport/session route functions ************************************************/ 
+doMembersOnly = function(req, res) {
+  console.log("printing req.pwd and username "+req.users.username)
+  if (req.users.pwd && req.users.username) {
+    // Render the membership information view
+    res.render('home');
+  } else {
+    // Render an error if, for some reason, req.user.displayName was undefined 
+    res.render('error', { title: 'Application error...', obj: 'sos' });
 
-
+  }
+};
+function checkAuthentication(req, res, next){
+    console.log("inside checkAuthentication");
+    // Passport will set req.isAuthenticated
+    if(req.isAuthenticated()){
+        // call the next bit of middleware
+        //    (as defined above this means doMembersOnly)
+        next();
+    }else{
+        // The user is not logged in. Redirect to the login page.
+        res.redirect("/login");
+    }
+}
+function doLogout(req, res){
+  req.logout();
+  res.redirect('/');
+};
 /********** page routes *******************************************************
  */ 
 index = function(req,res){
   //console.log(req.session.user);
-  if ( req.session.user == undefined) {
-    res.render('index', { username: false } );
-  }
-  else {
-    res.render('index', { username: req.session.user } );
-  }
+  res.render('index'); 
 };
-// login = function(req, res){
-//   res.redirect('/home');
+
+// home = function(req, res){
+//   res.render('home');
 // }
-home = function(req, res){
-  res.render('home');
-}
 
 live_cards = function(req, res){
-  //res.sendFile('/Users/Shirley/Desktop/f17/67328/final project/fp_dev/views/' + "live_cards.html");
+  
   res.render('live_cards');
 }
-
-
-
 
 /********** CRUD Create *******************************************************
  * Take the object defined in the request body and do the Create
@@ -131,11 +164,11 @@ doRetrieve = function(req, res){
 doUpdate = function(req, res){
   // if there is no filter to select documents to update, select all documents
   var filter = {"username": req.body.filter};//req.body.find ? JSON.parse(req.body.find) : {};
-  console.log("DSKFJDSLKJFL "+filter);
+  console.log("DSKFJDSLKJFL "+ JSON.stringify(filter));
   
   // if there no update operation defined, render an error page.
   if (!req.body.update) {
-    res.render('error', {title:'Error', message:'this did not work sos'});
+    res.render('error', {title:'Error', obj:'this did not work sos'});
     return;
   }
   var update =   {"$set":{"firstname":req.body.update}};//JSON.parse(req.body.update);
@@ -167,59 +200,14 @@ doDelete = function(req, res){
   var filter = req.body.find ? JSON.parse(req.body.find) : {};
   // if there no update operation defined, render an error page.
   console.log("this is WAT U DELETING: "+req.body +"idk if this works luol");
-  /*
-   * Call the model Update with:
-   *  - The collection to update
-   *  - The filter to select what documents to update
-   *  - The update operation
-   *    E.g. the request body string:
-   *      find={"name":"pear"}&update={"$set":{"leaves":"green"}}
-   *      becomes filter={"name":"pear"}
-   *      and update={"$set":{"leaves":"green"}}
-   *  - As discussed above, an anonymous callback function to be called by the
-   *    model once the update has been successful.
-   */
+
   mongoModel.delete(req.params.collection, 
-                      req.body,
-                      function(result) {
-                      var success = (result ? "Delete successful" : "Delete unsuccessful");
-                      res.render('message', {title: 'Mongo Demo', obj: success});
-                      });
+      req.body,
+      function(result) {
+      var success = (result ? "Delete successful" : "Delete unsuccessful");
+      res.render('message', {title: 'Mongo Demo', obj: success});
+      });
 }
-
-/*
- * How to test:
- *  - Create a test web page
- *  - Use REST Console for Chrome
- *    (If you use this option, be sure to set the Body Content Headers Content-Type to:
- *    application/x-www-form-urlencoded . Else body-parser won't work correctly.)
- *  - Use CURL (see tests below)
- *    curl comes standard on linux and MacOS.  For windows, download it from:
- *    http://curl.haxx.se/download.html
- *
- * Tests via CURL for Create and Update (Retrieve can be done from browser)
-# >>>>>>>>>> test CREATE success by adding 3 leaderboards
-curl -i -X PUT -d "name=Leo&score=2" http://localhost:50000/leaderboard
-curl -i -X PUT -d "name=Amiee&score=3" http://localhost:50000/leaderboard
-curl -i -X PUT -d "name=Su&score=4" http://localhost:50000/leaderboard
-curl -i -X PUT -d "name=Simon&score=1" http://localhost:50000/leaderboard
-# >>>>>>>>>> test CREATE missing what to put
-curl -i -X Get  http://localhost:50000/leaderboard
-# >>>>>>>>>> test UPDATE success - modify
-curl -i -X POST -d 'find={"name":"Leo"}&update={"$set":{"score":"100"}}' http://localhost:50000/leaderboard
-# >>>>>>>>>> test UPDATE success - insert
-curl -i -X POST -d 'find={"name":"plum"}&update={"$set":{"color":"purple"}}' http://localhost:50000/leaderboard
-# >>>>>>>>>> test UPDATE missing filter, so apply to all
-curl -i -X POST -d 'update={"$set":{"edible":"true"}}' http://localhost:50000/leaderboard
-# >>>>>>>>>> test UPDATE missing update operation
-curl -i -X POST -d 'find={"name":"pear"}' http://localhost:50000/leaderboard
-curl -i -X DELETE -d 'find={"name":"Leo"}' http://localhost:50000/leaderboard
- */
-
-
-
-
-
 
 
 

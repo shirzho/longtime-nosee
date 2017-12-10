@@ -1,31 +1,28 @@
 
 // Normal Express requires...
-var express = require('express');
+
 var http = require('http');
 var morgan = require('morgan');
-var app = express();
 var fs = require('fs');
 var path = require('path');
 var bodyParser = require('body-parser');
-var session = require("client-sessions");
+
+var express = require('express');
+var app = express();
 
 // Set the views directory
 app.set('views', __dirname + '/views');
 // Define the view (templating) engine
 app.set('view engine', 'ejs');
+
 // Log requests
 app.use(morgan('tiny'));
-//sessions
-app.use(session({
-    cookieName: 'session', // cookie name dictates the key name added to the request object
-    secret: 'ASDfd223lasdF2k9S2;l!2asd;af)O', // should be a large unguessable string
-    duration: 24 * 60 * 60 * 1000, // how long the session will stay valid in ms
-    activeDuration: 1000 * 60 * 5 // if expiresIn < activeDuration, session will be extended by activeDuration milliseconds
-}));
 
-// app.use(expressSessions)
 // parse application/x-www-form-urlencoded, with extended qs library
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
+app.set('passport',require('./models/authenticate.js').init(app));
 
 // Load all routes in the routes directory
 fs.readdirSync('./routes').forEach(function (file){
