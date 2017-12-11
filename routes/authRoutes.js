@@ -26,6 +26,7 @@ exports.init = function(app) {
    * The third argument is the middleware function to handle the membersOnly
    *    route.
    */
+
   app.get('/home',
           checkAuthentication,
           doMembersOnly);
@@ -37,10 +38,12 @@ exports.init = function(app) {
    *    the user to the /membersOnly route.  Upon failure to authenticate,
    *    redirect the user to the /login.html page.
    */
-
-  app.post('/login',
+  app.get('/login', function(req,res){
+    res.render('login');
+  })
+  app.post('/login_auth',
           passport.authenticate('local', {
-                                  failureRedirect: '/login.html',
+                                  failureRedirect: '/login',
                                   successRedirect: '/home'}));
   // The Logout route
   app.get('/logout', doLogout);
@@ -55,7 +58,8 @@ index = function(req, res) {
 doMembersOnly = function(req, res) {
   // We only should get here if the user has logged in (authenticated) and
   // in this case req.user should be defined, but be careful anyway.
-  if (req.user && req.user.displayName) {
+  console.log('AHHH'+ req.user.pwd);
+  if (req.user.pwd && req.user.username) {
     // Render the membership information view
     res.render('home');
   } else {
@@ -74,6 +78,7 @@ doMembersOnly = function(req, res) {
  *    middleware.
  */
 function checkAuthentication(req, res, next){
+    console.log("inside checkAuthentication");
     // Passport will set req.isAuthenticated
     if(req.isAuthenticated()){
         // call the next bit of middleware
@@ -81,7 +86,7 @@ function checkAuthentication(req, res, next){
         next();
     }else{
         // The user is not logged in. Redirect to the login page.
-        res.redirect("/login.html");
+        res.redirect("/login.ejs");
     }
 }
 

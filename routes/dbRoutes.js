@@ -5,60 +5,20 @@ exports.init = function(app){
     var passport = app.get('passport');
 
     app.get('/', index); // The login page currently, misleading name lol
-    //app.get('/home', home); //the landing page after login
+    
     app.get('/live_cards', live_cards);
-    // app.get('/login',function(req, res){
-    //   res.render('login');
-    // });
+   
     app.get('/favicon.ico', function(req, res) {
       res.status(204);
     });
-    
-    // app.post('/login',
-    //       passport.authenticate('local', {
-    //                               failureRedirect: '/login.html',
-    //                               successRedirect: '/home'}));
-
 
     // The collection parameter maps directly to the mongoDB collection
-    app.put('/users', doCreate); // CRUD Create
-    app.get('/users', doRetrieve); // CRUD Retrieve
-    app.post('/users', doUpdate); // CRUD Update
-    app.delete('/users', doDelete); // CRUD Delete
-
-    
-
-
+    app.put('/:collection', doCreate); // CRUD Create
+    app.get('/:collection', doRetrieve); // CRUD Retrieve
+    app.post('/:collection', doUpdate); // CRUD Update
+    app.delete('/:collection', doDelete); // CRUD Delete
 };
 
-/********** passport/session route functions ************************************************/ 
-doMembersOnly = function(req, res) {
-  console.log("printing req.pwd and username "+req.users.username)
-  if (req.users.pwd && req.users.username) {
-    // Render the membership information view
-    res.render('home');
-  } else {
-    // Render an error if, for some reason, req.user.displayName was undefined 
-    res.render('error', { title: 'Application error...', obj: 'sos' });
-
-  }
-};
-function checkAuthentication(req, res, next){
-    console.log("inside checkAuthentication");
-    // Passport will set req.isAuthenticated
-    if(req.isAuthenticated()){
-        // call the next bit of middleware
-        //    (as defined above this means doMembersOnly)
-        next();
-    }else{
-        // The user is not logged in. Redirect to the login page.
-        res.redirect("/login");
-    }
-}
-function doLogout(req, res){
-  req.logout();
-  res.redirect('/');
-};
 /********** page routes *******************************************************
  */ 
 index = function(req,res){
@@ -147,7 +107,7 @@ doRetrieve = function(req, res){
                 res.render('user_data',{obj: modelData});
             } else {
                 var message = "No documents with "+JSON.stringify(req.query)+ 
-                      " in collection" +req.params.collection+" found.";
+                      " in collection " +req.params.collection+" found.";
                 res.render('error', {title: 'ERRoR', obj: message});
             }
     });
@@ -201,7 +161,7 @@ doDelete = function(req, res){
   // if there no update operation defined, render an error page.
   console.log("this is WAT U DELETING: "+req.body +"idk if this works luol");
 
-  mongoModel.delete(req.params.collection, 
+  mongoModel.delete(req.params, 
       req.body,
       function(result) {
       var success = (result ? "Delete successful" : "Delete unsuccessful");

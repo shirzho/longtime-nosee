@@ -8,18 +8,26 @@ exports.findByUsername = function(username, callback) {
    */
   var err = null;
   // search for the user with a given username
-  // for (var i = 0 ; i < users.length ; i++) {
-  //   if (users[i].username == username) {
-  //     foundUser = users[i];
-  //     break;
-  //   }
-  // }
+  for (var i = 0 ; i < users.length ; i++) {
+    console.log('inside findbyUsername function'+users[i].username);
+    if (users[i].username == username) {
+      foundUser = users[i];
+      break;
+    }
+  }
   /*
    * Call the given callback function with err and the foundUser
    * err may be null (no error connecting to database)
    * and foundUser also null if no user by this name is found
    */
   callback(err, foundUser);
+}
+
+exports.findByUsername = function(collection, username, callback){
+  var foundUser = null;
+  for (var i=0 ; i< collection.count(); i++){
+    if( collection[i])
+  }
 }
 
 exports.findById = function(id, callback) {

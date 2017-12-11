@@ -15,7 +15,31 @@ mongoClient.connect(connection_string, function(err, db) {
 
 /********** authentication methods ***************************************
  */
- 
+ exports.findByUsername = function(collection,username,callback) {
+  var err = null;
+  
+  mongoDB.collection(collection).find({'username':username}).toArray(function(err, docs){
+     if (err) doError(err);
+      //console.log("docs"+JSON.stringify(docs));
+      callback(err, docs[0]);
+  });
+}
+
+exports.findById = function(collection,id, callback) {
+  var err = null;
+  var ObjectId = require('mongodb').ObjectID;
+
+   mongoDB.collection(collection).findOne({'_id': new ObjectId(id)}, function(err, doc){
+    if (err) doError(err);
+    console.log(id);
+    console.log("docs in FINDBYID"+JSON.stringify(doc));
+    callback(err, doc);
+  });
+}
+  
+
+
+
 /********** CRUD Create -> Mongo insert ***************************************
  * @param {string} collection - The collection within the database
  * @param {object} data - The object to insert as a MongoDB document
@@ -54,7 +78,7 @@ exports.retrieve = function(collection, query, callback) {
    * iteration does the actual retrieve. toArray asynchronously retrieves the
    * whole result set and returns an array.
    */
-  
+  console.log("query in doRetrieve "+ query);
   mongoDB.collection(collection).find(query).toArray(function(err, docs) {
       if (err) doError(err);
       console.log("docs"+JSON.stringify(docs));

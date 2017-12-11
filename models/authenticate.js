@@ -1,7 +1,7 @@
 var passport = require('passport');
 var Strategy = require('passport-local').Strategy;
 var expressSession = require('express-session');
-var users = require('./users.js');
+var users = require('./mongoModel.js');
 
 
 //sessions and Passport
@@ -31,11 +31,13 @@ exports.init = function (app) {
  */
 passport.use(new Strategy(
   function(username, password, done) {
-    console.log("inside passport Strategy");
-    users.findByUsername(username, function(err, foundUser) {
+    users.findByUsername("users", username, function(err, foundUser) {
+      console.log("inside called findbyun"+"username "+username+password);
       if (err) { return done(err); }
       if (!foundUser) { return done(null, false); }
-      if (foundUser.password != password) { return done(null, false); }
+      //console.log("inside findByUsername "+ foundUser.pwd, foundUser.username);
+      if (foundUser.pwd!= password) { return done(null, false); }
+      console.log("docs: "+foundUser.username);
       return done(null, foundUser);
     });
   }));
@@ -62,9 +64,10 @@ passport.use(new Strategy(
  *  on the next request.
  */
 passport.serializeUser(function(user, done) {
+  console.log("inside serializeuser "+user);
   // Pass null for no error, and the user ID as a key to lookup the user
   // upon deserialization.
-  done(null, user.id);
+  done(null, user._id);
 });
 
 /* 
@@ -76,7 +79,8 @@ passport.serializeUser(function(user, done) {
  *   Passport.  Passport will put the foundUser object onto req as req.user.
  */
 passport.deserializeUser(function(id, done) {
-  users.findById(id, function (err, foundUser) {
+  users.findById("users", id, function (err, foundUser) {
+    console.log('deserialize '+foundUser);
     // pass back err (if any) and the user object associated with this ID
     done(err, foundUser);
   });

@@ -15,6 +15,7 @@ app.set('views', __dirname + '/views');
 // Define the view (templating) engine
 app.set('view engine', 'ejs');
 
+
 // Log requests
 app.use(morgan('tiny'));
 
