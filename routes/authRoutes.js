@@ -17,27 +17,11 @@ exports.init = function(app) {
   var passport = app.get('passport');
   // Welcome page route
   
-  /*
-   * A route to display information only for members who are logged in
-   * The first argument is the route pattern
-   * The second argument is a middleware function to check if the user making
-   *    the request has been authenticated.  If so, it will call the next
-   *    middleware argument.  If not authenticated, it will res.render an eror.
-   * The third argument is the middleware function to handle the membersOnly
-   *    route.
-   */
 
-  app.get('/home',
-          checkAuthentication,
-          doMembersOnly);
-  /*
-   * A login route.
-   * This route only uses the Passport middleware to authenticate the user.
-   * It uses the 'local' authentication strategy (defined in 
-   *    models/authentication.js).  Upon successful authentication, redirect
-   *    the user to the /membersOnly route.  Upon failure to authenticate,
-   *    redirect the user to the /login.html page.
-   */
+
+  app.get('/home',checkAuthentication, homePath);
+  app.get('/live_cards', checkAuthentication,liveCardsPath);
+ 
   app.get('/login', function(req,res){
     res.render('login');
   })
@@ -55,10 +39,9 @@ index = function(req, res) {
 };
 
 // Members Only path handler
-doMembersOnly = function(req, res) {
+homePath = function(req, res) {
   // We only should get here if the user has logged in (authenticated) and
   // in this case req.user should be defined, but be careful anyway.
-  console.log('AHHH'+ req.user.pwd);
   if (req.user.pwd && req.user.username) {
     // Render the membership information view
     res.render('home');
@@ -68,15 +51,18 @@ doMembersOnly = function(req, res) {
   }
 };
 
-/*
- * Check if the user has authenticated
- * @param req, res - as always...
- * @param {function} next - The next middleware to call.  This is a standard
- *    pattern for middleware; it should call the next() middleware component
- *    once it has completed its work.  Typically, the middleware you have
- *    been defining has made a response and has not needed any additional 
- *    middleware.
- */
+liveCardsPath = function(req, res) {
+  // We only should get here if the user has logged in (authenticated) and
+  // in this case req.user should be defined, but be careful anyway.
+  if (req.user.pwd && req.user.username) {
+    // Render the membership information view
+    res.render('live_cards');
+  } else {
+    // Render an error if, for some reason, req.user.displayName was undefined 
+    res.render('error', { title: 'error!',obj: 'Application error...' });
+  }
+};
+
 function checkAuthentication(req, res, next){
     console.log("inside checkAuthentication");
     // Passport will set req.isAuthenticated
@@ -86,7 +72,7 @@ function checkAuthentication(req, res, next){
         next();
     }else{
         // The user is not logged in. Redirect to the login page.
-        res.redirect("/login.ejs");
+        res.redirect("/login");
     }
 }
 

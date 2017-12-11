@@ -3,7 +3,10 @@ $(document).ready(function(){
 
     $('#edit_user').submit(update_user);
     $('#delete_user').submit(delete_user);
+    $('#addUser').submit(add_livecard_user);
 
+    
+});//close document ready
 
     function update_user(event){
             var updated_user = $('#orig_username').val();
@@ -27,7 +30,6 @@ $(document).ready(function(){
     function delete_user(event){
         var name = $('#deleted_username').val();
         console.log("the item being deleted is: " + name);
-        //$('#delete_result').empty();
         $.ajax({
             url: './users',
             type: 'DELETE',
@@ -38,7 +40,22 @@ $(document).ready(function(){
             }
         });
         event.preventDefault();
-    }
-    //delete user
+        $('#delete_username').val('');
+    }//delete user  
 
-});//close document ready
+    function add_livecard_user(event){
+        var user_added = $('user_added').val();
+        $.ajax({
+            url: './livecards', //collection name
+            type: 'PUT',
+            data: {username:user_added },
+            success: function(result){
+                console.log("successfully added livecards user buddy");
+            }
+            //figure out how to check if user_added exists in Users collection first
+            //THEN add username as an array value in a new document for livecards collection
+        })
+        
+    }
+
+

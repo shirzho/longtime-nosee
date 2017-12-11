@@ -4,8 +4,6 @@ $(document).ready(function(){
     
     $('#register').submit(create_user);
     $('#login').submit(login_user);
-    //$('#edit_user').submit(update_user);
-    //$('#delete').submit(delete_user);
 
     function create_user(event){
         //set all user input pulled from view to vars here

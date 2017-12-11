@@ -6,7 +6,7 @@ exports.init = function(app){
 
     app.get('/', index); // The login page currently, misleading name lol
     
-    app.get('/live_cards', live_cards);
+    //app.get('/live_cards', live_cards);
    
     app.get('/favicon.ico', function(req, res) {
       res.status(204);
@@ -159,9 +159,9 @@ doDelete = function(req, res){
   // if there is no filter to select documents to update, select all documents
   var filter = req.body.find ? JSON.parse(req.body.find) : {};
   // if there no update operation defined, render an error page.
-  console.log("this is WAT U DELETING: "+req.body +"idk if this works luol");
+  console.log("deleting: "+JSON.stringify(req.body));
 
-  mongoModel.delete(req.params, 
+  mongoModel.delete(req.params.collection, 
       req.body,
       function(result) {
       var success = (result ? "Delete successful" : "Delete unsuccessful");
