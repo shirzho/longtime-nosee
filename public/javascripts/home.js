@@ -44,17 +44,18 @@ $(document).ready(function(){
     }//delete user  
 
     function add_livecard_user(event){
-        var user_added = $('user_added').val();
+        var user_added = $('#user_added').val();
+
         $.ajax({
             url: './livecards', //collection name
             type: 'PUT',
-            data: {username:user_added },
+            data: {username: user_added },
             success: function(result){
-                console.log("successfully added livecards user buddy");
             }
             //figure out how to check if user_added exists in Users collection first
             //THEN add username as an array value in a new document for livecards collection
-        })
+        });
+        event.preventDefault();
         
     }
 

@@ -49,6 +49,6 @@ var sio =require('socket.io');
 var io = sio(httpServer);
 httpServer.listen(50000, function() {console.log('Listening on 50000');});
 
-require('./sockets/serverSocket.js').init(io);
+require('./routes/dbRoutes.js').initSockets(io);
 
 

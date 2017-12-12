@@ -12,7 +12,31 @@ mongoClient.connect(connection_string, function(err, db) {
   console.log("Connected to MongoDB server at: "+connection_string);
   mongoDB = db; // Make reference to db globally available.
 });
+//this is a method to generate a namespace name based off of two usernames
 
+
+//check for existing livecard pairs method
+exports.checkLivecardPair = function(collection, user1, user2, callback){
+  
+  console.log("inside checklivecard method in mongomodels");
+  mongoDB.collection(collection).findOne({"pair": [user1, user2]}, function(err,doc){
+    //or {'pair':[req.user.username, req.body.username]}
+      console.log("DOC: "+doc);
+      if (err) doError(err);
+      console.log("this is error: "+ err);
+      if (doc==null || doc.length==0) {
+        console.log("checking reverse user pair");
+        mongoDB.collection("livecards").findOne({"pair": [user2, user1]}, function(err, doc){
+        if (err) doError(err);
+        console.log("this is error: part 2 "+ err);
+
+        });
+        
+      }
+    callback(doc);
+    });
+
+}
 /********** authentication methods ***************************************
  */
 

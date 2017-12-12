@@ -1,6 +1,7 @@
 
 var mongoModel = require('../models/mongoModel.js');
-
+var NSP = null //dynamic namespace setter
+exports.NSP = NSP;
 exports.init = function(app){
     var passport = app.get('passport');
 
@@ -8,9 +9,18 @@ exports.init = function(app){
     
     //app.get('/live_cards', live_cards);
    
-    app.get('/favicon.ico', function(req, res) {
-      res.status(204);
-    });
+    app.get('/home',checkAuthentication, homePath);
+    app.get('/live_cards', checkAuthentication,liveCardsPath);
+   
+    app.get('/login', function(req,res){
+      res.render('login');
+    })
+    app.post('/login_auth',
+            passport.authenticate('local', {
+                                    failureRedirect: '/login',
+                                    successRedirect: '/home'}));
+    // The Logout route
+    app.get('/logout', doLogout);
 
     // The collection parameter maps directly to the mongoDB collection
     app.put('/:collection', doCreate); // CRUD Create
@@ -30,10 +40,54 @@ index = function(req,res){
 //   res.render('home');
 // }
 
-live_cards = function(req, res){
-  
-  res.render('live_cards');
+// Members Only path handler
+homePath = function(req, res) {
+  // We only should get here if the user has logged in (authenticated) and
+  // in this case req.user should be defined, but be careful anyway.
+  if (req.user.pwd && req.user.username) {
+    // Render the membership information view
+    res.render('home');
+  } else {
+    // Render an error if, for some reason, req.user.displayName was undefined 
+    res.render('error', { title: 'error!',obj: 'Application error...' });
+  }
+};
+
+liveCardsPath = function(req, res) {
+  // We only should get here if the user has logged in (authenticated) and
+  // in this case req.user should be defined, but be careful anyway.
+  if (req.user.pwd && req.user.username) {
+    // Render the membership information view
+    res.render('live_cards');
+  } else {
+    // Render an error if, for some reason, req.user.displayName was undefined 
+    res.render('error', { title: 'error!',obj: 'Application error...' });
+  }
+};
+
+function checkAuthentication(req, res, next){
+    console.log("inside checkAuthentication");
+    // Passport will set req.isAuthenticated
+    if(req.isAuthenticated()){
+        // call the next bit of middleware
+        //    (as defined above this means doMembersOnly)
+        next();
+    }else{
+        // The user is not logged in. Redirect to the login page.
+        res.redirect("/login");
+    }
 }
+
+/* 
+ * Log out the user
+ */
+function doLogout(req, res){
+  // Passport puts a logout method on req to use.
+  req.logout();
+  // Redirect the user to the welcome page which does not require
+  // being authenticated.
+  res.redirect('/');
+};
 
 /********** CRUD Create *******************************************************
  * Take the object defined in the request body and do the Create
@@ -42,14 +96,7 @@ live_cards = function(req, res){
  * consistent with CRUD operations.)
  */ 
 doCreate = function(req, res){
-    /*
-    * A series of console.log messages are produced in order to demonstrate
-    * the order in which the code is executed.  Given that asynchronous 
-    * operations are involved, the order will *not* be sequential as implied
-    * by the preceding numbers.  These numbers are only shorthand to quickly
-    * identify the individual messages.
-    */
-    console.log("1. Starting doCreate in dbRoutes");
+    
     /*
     * First check if req.body has something to create.
     * Object.keys(req.body).length is a quick way to count the number of
@@ -72,15 +119,50 @@ doCreate = function(req, res){
     *    is successful, a callback function is provided for the model to 
     *    call in the future whenever the create has completed.
     */
-    mongoModel.create ( req.params.collection, 
-    req.body,
+    else{
+      if (req.params.collection == "livecards"){
+      //var exists = null;
+      //check if requested user exists in Users collection
+      mongoModel.findByUsername("users",req.body.username, function(err, foundUser) {
+        if (err) { return false; };
+        if (foundUser){
+          console.log("foundUser in livecards create method "+ JSON.stringify(foundUser));
+          var newData = {"pair": [req.body.username, req.user.username]};
+          console.log('newData ', newData);
+          //check that user pair doesn't exist inside livecards yet
+          mongoModel.checkLivecardPair("livecards", req.body.username, req.user.username, function(status){
+            NSP = req.body.username+req.user.username;
+            console.log("NSP "+ NSP);
+            console.log("this is the status"+status);
+            if(!status){
+              mongoModel.create ( req.params.collection, 
+              newData,
+                function(result) {
+                    console.log("creating new userpair document in livecard collection!")
+                    var success = (result ? "Create successful" : "Create unsuccessful");
+                    res.render('message', {title: 'Mongo Demo', obj: success});
+                });
+            }else{
+              res.render('message', {title: 'Mongo Demo', obj: "No create message body found"});
+              console.log("user already exists"); 
+            }
+          });
+        } 
+      });
+        
+    }else{ //for users collection
+      mongoModel.create ( req.params.collection, 
+      req.body,
         function(result) {
+            console.log("THIS IS REQ BODY "+JSON.stringify(req.body));
             // result equal to true means create was successful
             var success = (result ? "Create successful" : "Create unsuccessful");
             res.render('message', {title: 'Mongo Demo', obj: success});
             console.log("2. Done with callback in dbRoutes create");
     });
-}
+    }
+  }
+};
 
 /********** CRUD Retrieve (or Read) *******************************************
  * Take the object defined in the query string and do the Retrieve
@@ -96,13 +178,13 @@ doRetrieve = function(req, res){
    *    model once the retrieve has been successful.
    * modelData is an array of objects returned as a result of the Retrieve
    */
-   console.log("this is query " + JSON.stringify(req.query));
+   //console.log("this is query " + JSON.stringify(req.query));
 
     mongoModel.retrieve(
         req.params.collection, 
         req.query,
         function(modelData) {
-          console.log("MODELDATA" + modelData.length);
+          //console.log("MODELDATA" + modelData.length);
             if (modelData.length) {
                 res.render('user_data',{obj: modelData});
             } else {
@@ -114,12 +196,6 @@ doRetrieve = function(req, res){
 }
 
 /********** CRUD Update *******************************************************
- * Take the MongoDB update object defined in the request body and do the
- * update.  (I understand this is bad form for it assumes that the client
- * has knowledge of the structure of the database behind the model.  I did
- * this to keep the example very general for any collection of any documents.
- * You should not do this in your project for you know exactly what collection
- * you are using and the content of the documents you are storing to them.)
  */ 
 doUpdate = function(req, res){
   // if there is no filter to select documents to update, select all documents
@@ -168,6 +244,59 @@ doDelete = function(req, res){
       res.render('message', {title: 'Mongo Demo', obj: success});
       });
 }
+
+/********** SERVER SOCKET  *******************************************************
+ */
+//namespace checker function
+function checkNSP(nspVar){
+  if(nspVar){
+    return nspVar;
+  }else{
+    return "test";
+  }
+}
+exports.initSockets = function(io) {
+    var currentPlayers = 0; // keep track of the number of players
+    var msg;
+    var seconds=0;
+  // When a new connection is initiated
+    io.sockets.on('connection', function (socket) {
+        
+    });
+
+    //changing namespace between user pair
+    var user_nsp = io.of('/'+checkNSP(NSP));
+    user_nsp.on('connection', function(socket){
+        ++currentPlayers;
+
+        socket.emit('players', { number: currentPlayers});
+        socket.broadcast.emit('players',{number: currentPlayers});
+        socket.emit('welcome', {welcome_msg: "Welcome user, "+currentPlayers});
+
+
+        socket.on( 'sending_chat', function(txt){
+            socket.broadcast.emit('sending_chat', txt);
+            socket.emit('sending_chat', txt);
+        });
+        
+        socket.on('live_write', function(data){
+            writing = data.text;
+            console.log("writing on serverSocket: "+writing);
+            socket.broadcast.emit('live_write',{text: writing});
+            socket.emit('live_write', {text: writing});
+        });
+        //disconnect     
+        socket.on('disconnect', function () {
+            --currentPlayers;
+            socket.emit('players', { number: currentPlayers});
+            socket.broadcast.emit('players', { number: currentPlayers});
+            socket.broadcast.emit('welcome', {welcome_msg: "Welcome player, "+currentPlayers});
+        });
+        
+    });
+}
+
+
 
 
 
