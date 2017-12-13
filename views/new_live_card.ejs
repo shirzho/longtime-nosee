@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <script src="../socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="javascripts/new_live_card_socket.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/live_cards.css">
+</head>
+<body>
+    <p> There are currently <span id="numPlayers">no other</span> users online.</p>
+    <p>  <span id="welcome"></span></p>
+    <p> Name your card (it will be saved with this name)</p>
+    <input type="text" id="cardName">
+    <br><br>
+    <textarea id="card" rows ="15" cols = "30" placeholder="pressing spacebar sends the text you wrote live to other users"></textarea> 
+    <br>
+    <button id= 'save'>save card</button>
+
+    <div id="overlay_screen">
+        <div id="overlay">
+            <p id="message"></p>
+            <input id= 'chatbox' type = "text", autocomplete="off">
+            <button id= 'sendchat'>send</button>
+            <br>
+            <button id="quit">close</button>
+        </div>
+        
+        <!-- <input id= 'chatbox' type = "text", autocomplete="off"> -->
+        
+    </div>
+    <button id='chat'>chat!</button>
+    <br>
+    <div id = "infoForSave">
+        <p> Enter your buddy's username:</p>
+        <input type="text" id="buddyName">
+        <input id= 'getBuddyName' type = "submit">
+    </div>
+</body>
+</html>

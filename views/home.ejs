@@ -6,32 +6,38 @@
 </head>
     <body>
         <p>congrats login was successful, you're now at the homepage</p>
+        
         <form id='edit_user'>
-        <h2>Edit user info:</h2>
-        please insert your current username here: 
-        <br><input id="orig_username" type="text", autocomplete="off"><br>
-        <p>this is what you want to change:</p>
+            <h3>Edit user info:</h3>
+            please insert your current username here: 
+            <br><input id="orig_username" type="text", autocomplete="off"><br>
+            <p>this is what you want to change:</p>
             First Name: <br><input id= 'edit_firstName' type="text", autocomplete="off"><br>
             <!-- Last Name: <br><input id= 'lastName' type="text", autocomplete="off" ><br> -->
             <input id= 'editUser' type = "submit">
         </form>
-        <p>output<span id="edit_msg"></span></p>
+        <p><span id="edit_msg"></span></p>
         <br>
-        <h1> Delete an existing user here</h1>
-        <form id="delete_user">
-            username: <br><input id= 'deleted_username' type="text", autocomplete="off"><br>
-            <input id= 'deleteUser' type = "submit">
+
+        <h3> Delete an existing card here</h3>
+        <form id="delete_card">
+            Card Name: <br><input id= 'deleted_cardName' type="text", autocomplete="off"><br>
+            <input id= 'deleteCard' type = "submit">
         </form>
         <p><span id="delete_msg"></span></p>
         <br>
 
-        <p>Enter the username of who you want to make cards with:</p>
-        <form id='addUser'>
+        <p> create new card here: </p>
+        <a href = "new_live_card"><button id="newcard"> new card </button></a>
+
+        <p>Retrieve all cards made with this user:</p>
+        <form id='getByUser'>
             username:
             <br>
-            <input id="user_added" type="text", autocomplete="off">
+            <input id="findByUser" type="text", autocomplete="off">
             <br>
             <input id= 'addUserSubmit' type = "submit">
         </form>
+        <p><span id="card_msg"></span></p>
     </body>
 </html>

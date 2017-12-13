@@ -1,5 +1,6 @@
 var mongoClient = require('mongodb').MongoClient;
 
+
 var connection_string = 'mongodb://shirley:shirley@ds155820.mlab.com:55820/longtimenosee';
 var blah = 'mongodb://shirley:shirley@ds155820.mlab.com:55820/longtimenosee'
 
@@ -16,22 +17,16 @@ mongoClient.connect(connection_string, function(err, db) {
 
 
 //check for existing livecard pairs method
-exports.checkLivecardPair = function(collection, user1, user2, callback){
+exports.checkLivecardPair = function(collection, users, callback){
   
   console.log("inside checklivecard method in mongomodels");
-  mongoDB.collection(collection).findOne({"pair": [user1, user2]}, function(err,doc){
+  mongoDB.collection(collection).findOne({"pair": users}, function(err,doc){
     //or {'pair':[req.user.username, req.body.username]}
       console.log("DOC: "+doc);
       if (err) doError(err);
       console.log("this is error: "+ err);
       if (doc==null || doc.length==0) {
-        console.log("checking reverse user pair");
-        mongoDB.collection("livecards").findOne({"pair": [user2, user1]}, function(err, doc){
-        if (err) doError(err);
-        console.log("this is error: part 2 "+ err);
-
-        });
-        
+        console.log("checking reverse user pair");       
       }
     callback(doc);
     });
@@ -97,6 +92,7 @@ exports.retrieve = function(collection, query, callback) {
    * iteration does the actual retrieve. toArray asynchronously retrieves the
    * whole result set and returns an array.
    */
+   console.log("query inside retrieve function" + JSON.stringify(query));
   mongoDB.collection(collection).find(query).toArray(function(err, docs) {
       if (err) doError(err);
       
@@ -109,7 +105,7 @@ exports.retrieve = function(collection, query, callback) {
 
 /********** CRUD Update -> Mongo updateMany ***********************************
  * @param {string} collection - The collection within the database
- * @param {object} filter - The MongoDB filter
+ * @param {object}  - The MongoDB filter
  * @param {object} update - The update operation to perform
  * @param {function} callback - Function to call upon completion
  *

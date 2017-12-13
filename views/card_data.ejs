@@ -1,25 +1,25 @@
 <table>
     <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Username</th>
-        <th>Password</th>
+        <th>Card Name</th>
+        <th>Card Content</th>
+        <th>User Pair</th>
+        
     </tr>
     <% if (obj.length) { %>
         <% for(var i = 0; i < obj.length; i++) { %>
-            <% var user = obj[i]%>
+            <% var livecard = obj[i]%>
             <tr>
                 <td>
-                    <%= user.firstname %>
+                    <%= livecard.cardName %>
                 </td>
                 <td>
-                    <%= user.lastname %>
+                    <%= livecard.cardContent%>
                 </td>
                 <td>
-                    <%= user.username %>
+                    <%= livecard.pair %>
                 </td>
                 <td>
-                    <%= user.pwd %>
+                    <button>Edit  <%= livecard.cardName %> </button>
                 </td>
             </tr>
         <% }; %>

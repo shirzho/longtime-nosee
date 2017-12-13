@@ -1,33 +1,34 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
 <head>
     <script src="../socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="javascripts/userNspSocket.js"></script>
+    <script src="javascripts/live_cards.js"></script>
     <link rel="stylesheet" type="text/css" href="css/live_cards.css">
-
-
+    <title>Edit Cards</title>
 </head>
 <body>
-    <p> There are currently <span id="numPlayers">no other</span> users online.</p>
-    <p>  <span id="welcome"></span></p>
-
-    <textarea id="card" rows ="15" cols = "30" placeholder="pressing spacebar sends the text you wrote live to other users"></textarea> 
+    <p>Retrieve all cards made with this user:</p>
+    <form id='getByUser'>
+        username:
+        <br>
+        <input id="findByUser" type="text", autocomplete="off">
+        <br>
+        <input id= 'addUserSubmit' type = "submit">
+    </form>
+    <p><span id="card_msg"></span></p>
     <br>
-    <button id= 'save'>save card</button>
+   
 
-    <div id="overlay_screen">
-        <div id="overlay">
-            <p id="message"></p>
-            <input id= 'chatbox' type = "text", autocomplete="off">
-            <button id= 'sendchat'>send</button>
-            <br>
-            <button id="quit">close</button>
-        </div>
-        
-        <!-- <input id= 'chatbox' type = "text", autocomplete="off"> -->
-        
-    </div>
-    <button id='chat'>chat!</button>
+    <p>Get card by card name:</p>
+    <form id='getByCardName'>
+        card name:
+        <br>
+        <input id="findByCardName" type="text", autocomplete="off">
+        <br>
+        <input id= 'getCardbyTitle' type = "submit">
+    </form>
+    <p><span id="edit_card_bytitle"></span></p>
+    <br>
 </body>
 </html>

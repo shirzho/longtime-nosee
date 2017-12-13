@@ -2,8 +2,9 @@
 $(document).ready(function(){
 
     $('#edit_user').submit(update_user);
-    $('#delete_user').submit(delete_user);
-    $('#addUser').submit(add_livecard_user);
+    $('#delete_card').submit(deleteCard);
+    $('#getByUser').submit(getCardsByUser);
+
 
     
 });//close document ready
@@ -27,36 +28,48 @@ $(document).ready(function(){
             event.preventDefault();
     }
 
-    function delete_user(event){
-        var name = $('#deleted_username').val();
-        console.log("the item being deleted is: " + name);
+    function deleteCard(event){
+        var cardName = $('#deleted_cardName').val();
+        console.log("the item being deleted is: " + cardName);
         $.ajax({
-            url: './users',
+            url: './livecards',
             type: 'DELETE',
-            data: { username: name },
+            data: { "cardName": cardName },
             success:function(result){
-                console.log("Successfully deleted item");
+                console.log("Successfully deleted card");
                 $('#delete_result').append(result);
             }
         });
         event.preventDefault();
-        $('#delete_username').val('');
-    }//delete user  
+    }//delete card
 
-    function add_livecard_user(event){
-        var user_added = $('#user_added').val();
-
+    //retrieve all cards with this user
+    function getCardsByUser(event){
+        var getUser = $('#findByUser').val();
         $.ajax({
             url: './livecards', //collection name
-            type: 'PUT',
-            data: {username: user_added },
+            type: 'GET',
+            data: { "pair": getUser },
             success: function(result){
+                console.log("successfully retrieved cards");
+                $("#card_msg").append(result)
             }
-            //figure out how to check if user_added exists in Users collection first
-            //THEN add username as an array value in a new document for livecards collection
         });
         event.preventDefault();
-        
     }
+
+    // function add_livecard_user(event){
+    //     var user_added = $('#user_added').val();
+
+    //     $.ajax({
+    //         url: './livecards', //collection name
+    //         type: 'PUT',
+    //         data: {username: user_added },
+    //         success: function(result){
+    //         }
+           
+    //     });
+    //     event.preventDefault();
+    // }
 
 

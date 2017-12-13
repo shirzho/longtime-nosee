@@ -1,7 +1,6 @@
 
 var mongoModel = require('../models/mongoModel.js');
-var NSP = null //dynamic namespace setter
-exports.NSP = NSP;
+
 exports.init = function(app){
     var passport = app.get('passport');
 
@@ -9,9 +8,11 @@ exports.init = function(app){
     
     //app.get('/live_cards', live_cards);
    
-    app.get('/home',checkAuthentication, homePath);
+    app.get('/home', checkAuthentication, homePath);
+    //app.get('/home', function(req,res){res.render('home')});
     app.get('/live_cards', checkAuthentication,liveCardsPath);
-   
+    //app.get('/live_cards', function(req,res){res.render('live_cards')});
+    app.get('/new_live_card', checkAuthentication,newCardPath);
     app.get('/login', function(req,res){
       res.render('login');
     })
@@ -59,6 +60,18 @@ liveCardsPath = function(req, res) {
   if (req.user.pwd && req.user.username) {
     // Render the membership information view
     res.render('live_cards');
+  } else {
+    // Render an error if, for some reason, req.user.displayName was undefined 
+    res.render('error', { title: 'error!',obj: 'Application error...' });
+  }
+};
+
+newCardPath = function(req, res) {
+  // We only should get here if the user has logged in (authenticated) and
+  // in this case req.user should be defined, but be careful anyway.
+  if (req.user.pwd && req.user.username) {
+    // Render the membership information view
+    res.render('new_live_card');
   } else {
     // Render an error if, for some reason, req.user.displayName was undefined 
     res.render('error', { title: 'error!',obj: 'Application error...' });
@@ -120,48 +133,21 @@ doCreate = function(req, res){
     *    call in the future whenever the create has completed.
     */
     else{
+      //for livecards collection only (change pair from just buddyName to [buddyname, yourname] sorted)
       if (req.params.collection == "livecards"){
-      //var exists = null;
-      //check if requested user exists in Users collection
-      mongoModel.findByUsername("users",req.body.username, function(err, foundUser) {
-        if (err) { return false; };
-        if (foundUser){
-          console.log("foundUser in livecards create method "+ JSON.stringify(foundUser));
-          var newData = {"pair": [req.body.username, req.user.username]};
-          console.log('newData ', newData);
-          //check that user pair doesn't exist inside livecards yet
-          mongoModel.checkLivecardPair("livecards", req.body.username, req.user.username, function(status){
-            NSP = req.body.username+req.user.username;
-            console.log("NSP "+ NSP);
-            console.log("this is the status"+status);
-            if(!status){
-              mongoModel.create ( req.params.collection, 
-              newData,
-                function(result) {
-                    console.log("creating new userpair document in livecard collection!")
-                    var success = (result ? "Create successful" : "Create unsuccessful");
-                    res.render('message', {title: 'Mongo Demo', obj: success});
-                });
-            }else{
-              res.render('message', {title: 'Mongo Demo', obj: "No create message body found"});
-              console.log("user already exists"); 
-            }
-          });
-        } 
-      });
+        var userPair = [req.user.username, req.body.pair]
+        userPair = userPair.sort();
+        req.body.pair = userPair;
+      };
         
-    }else{ //for users collection
-      mongoModel.create ( req.params.collection, 
-      req.body,
+      //for users and livecards collections
+      mongoModel.create ( req.params.collection, req.body,
         function(result) {
-            console.log("THIS IS REQ BODY "+JSON.stringify(req.body));
             // result equal to true means create was successful
             var success = (result ? "Create successful" : "Create unsuccessful");
             res.render('message', {title: 'Mongo Demo', obj: success});
-            console.log("2. Done with callback in dbRoutes create");
-    });
+        });
     }
-  }
 };
 
 /********** CRUD Retrieve (or Read) *******************************************
@@ -170,46 +156,60 @@ doCreate = function(req, res){
  */ 
 
 doRetrieve = function(req, res){
-  /*
-   * Call the model Retrieve with:
-   *  - The collection to Retrieve from
-   *  - The object to lookup in the model, from the request query string
-   *  - As discussed above, an anonymous callback function to be called by the
-   *    model once the retrieve has been successful.
-   * modelData is an array of objects returned as a result of the Retrieve
-   */
-   //console.log("this is query " + JSON.stringify(req.query));
-
-    mongoModel.retrieve(
-        req.params.collection, 
-        req.query,
-        function(modelData) {
-          //console.log("MODELDATA" + modelData.length);
-            if (modelData.length) {
-                res.render('user_data',{obj: modelData});
-            } else {
-                var message = "No documents with "+JSON.stringify(req.query)+ 
-                      " in collection " +req.params.collection+" found.";
-                res.render('error', {title: 'ERRoR', obj: message});
-            }
+  
+  console.log("this is req query in the begeinning " + JSON.stringify(req.query));
+  //change req.query if collection is livecards
+  if(req.params.collection=="livecards" && req.query.pair){
+    console.log("i shouldn't be in here if i am wtf "+ req.query.pair);
+    var userPair = [req.user.username, req.query.pair]
+    userPair = userPair.sort();
+    req.query = {"pair" : userPair};
+  }
+  mongoModel.retrieve(req.params.collection, req.query,
+      function(modelData) {
+          if (modelData.length && req.query.pair) {
+              res.render('card_data',{obj: modelData});
+          }else if(modelData.length && req.query.cardName){
+              console.log("I made it in here yay!")
+              res.render('edit_card',{obj: modelData});
+          } else {
+              var message = "No documents with "+JSON.stringify(req.query)+ 
+                    " in collection " +req.params.collection+" found.";
+              res.render('error', {title: 'ERRoR', obj: message});
+          }
     });
+  
 }
 
 /********** CRUD Update *******************************************************
  */ 
 doUpdate = function(req, res){
   // if there is no filter to select documents to update, select all documents
-  var filter = {"username": req.body.filter};//req.body.find ? JSON.parse(req.body.find) : {};
-  console.log("DSKFJDSLKJFL "+ JSON.stringify(filter));
+  
   
   // if there no update operation defined, render an error page.
   if (!req.body.update) {
     res.render('error', {title:'Error', obj:'this did not work sos'});
     return;
   }
-  var update =   {"$set":{"firstname":req.body.update}};//JSON.parse(req.body.update);
 
-  console.log("THIS IS REQ BODY:" +JSON.stringify(req.body));
+  if (req.params.collection=="users"){
+    var filter = {"username": req.body.filter};//req.body.find ? JSON.parse(req.body.find) : {};
+    console.log("DSKFJDSLKJFL "+ JSON.stringify(filter));
+    var update =   {"$set":{"firstname":req.body.update}};//JSON.parse(req.body.update);
+    console.log("THIS IS REQ BODY:" +JSON.stringify(req.body));
+  }
+  if (req.params.collection=="livecards"){
+    console.log("THIS IS REQ BODY:" +JSON.stringify(req.body.update));
+    var key = req.body.update.cardName
+    var update = {"$set":{cardContent: req.body.update.card, cardName : req.body.update.cardName}};
+    console.log("update "+ JSON.stringify(update));
+    var newFilter = [req.user.username, req.body.filter]
+    newFilter = newFilter.sort();
+    console.log("new filter "+newFilter);
+    var filter = {"pair": newFilter};
+  }
+  
   /*
    * Call the model Update with:
    *  - The collection to update
@@ -248,13 +248,7 @@ doDelete = function(req, res){
 /********** SERVER SOCKET  *******************************************************
  */
 //namespace checker function
-function checkNSP(nspVar){
-  if(nspVar){
-    return nspVar;
-  }else{
-    return "test";
-  }
-}
+
 exports.initSockets = function(io) {
     var currentPlayers = 0; // keep track of the number of players
     var msg;
@@ -265,7 +259,7 @@ exports.initSockets = function(io) {
     });
 
     //changing namespace between user pair
-    var user_nsp = io.of('/'+checkNSP(NSP));
+    var user_nsp = io.of('/test');
     user_nsp.on('connection', function(socket){
         ++currentPlayers;
 
