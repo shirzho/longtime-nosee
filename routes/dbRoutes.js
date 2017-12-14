@@ -35,7 +35,7 @@ exports.init = function(app){
 /********** page routes *******************************************************
  */ 
 index = function(req,res){
-  //console.log(req.session.user);
+  
   res.render('index'); 
 };
 
@@ -159,10 +159,8 @@ doCreate = function(req, res){
 
 doRetrieve = function(req, res){
   
-  console.log("this is req query in the begeinning " + JSON.stringify(req.query));
   //change req.query if collection is livecards
   if(req.params.collection=="livecards" && req.query.pair){
-    console.log("i shouldn't be in here if i am wtf "+ req.query.pair);
     var userPair = [req.user.username, req.query.pair]
     userPair = userPair.sort();
     req.query = {"pair" : userPair};
@@ -172,7 +170,6 @@ doRetrieve = function(req, res){
           if (modelData.length && req.query.pair) {
               res.render('card_data',{obj: modelData});
           }else if(modelData.length && req.query.cardName){
-              console.log("I made it in here yay!")
               res.render('edit_card',{obj: modelData});
           } else {
               var message = "No documents with "+JSON.stringify(req.query)+ 
@@ -197,21 +194,16 @@ doUpdate = function(req, res){
 
   if (req.params.collection=="users"){
     var filter = {"username": req.body.filter};//req.body.find ? JSON.parse(req.body.find) : {};
-    console.log("DSKFJDSLKJFL "+ JSON.stringify(filter));
     var update =   {"$set":{"firstname":req.body.update}};//JSON.parse(req.body.update);
-    console.log("THIS IS REQ BODY:" +JSON.stringify(req.body));
   }else{
     if (req.params.collection=="livecards" && req.body.update.cardName){
-    console.log("THIS IS REQ BODY:" +JSON.stringify(req.body.update));
+    
     var key = req.body.update.cardName
     var update = {"$set":{cardContent: req.body.update.card, cardName : req.body.update.cardName}};
-    console.log("update "+ JSON.stringify(update));
     var newFilter = [req.user.username, req.body.filter]
     newFilter = newFilter.sort();
-    console.log("new filter "+newFilter);
     var filter = {"pair": newFilter};
   }else{
-    console.log("INSIDE DBROUTES this is req.body.update.card"+ JSON.stringify(req.body.update));
     var update = {"$set":{cardContent: req.body.update}};
     var filter = {"cardName": req.body.filter};
   }
@@ -243,7 +235,6 @@ doDelete = function(req, res){
   // if there is no filter to select documents to update, select all documents
   var filter = req.body.find ? JSON.parse(req.body.find) : {};
   // if there no update operation defined, render an error page.
-  console.log("deleting: "+JSON.stringify(req.body));
 
   mongoModel.delete(req.params.collection, 
       req.body,
@@ -252,62 +243,4 @@ doDelete = function(req, res){
       res.render('message', {title: 'Mongo Demo', obj: success});
       });
 }
-
-/********** SERVER SOCKET  *******************************************************
- */
-//namespace checker function
-
-exports.initSockets = function(io) {
-    var currentPlayers = 0; // keep track of the number of players
-    var msg;
-    var seconds=0;
-  // When a new connection is initiated
-    io.sockets.on('connection', function (socket) {
-        
-    });
-
-    //changing namespace between user pair
-    var user_nsp = io.of('/test');
-    user_nsp.on('connection', function(socket){
-        ++currentPlayers;
-
-        socket.emit('players', { number: currentPlayers});
-        socket.broadcast.emit('players',{number: currentPlayers});
-        socket.emit('welcome', {welcome_msg: "Welcome user, "+currentPlayers});
-
-
-        socket.on( 'sending_chat', function(txt){
-            socket.broadcast.emit('sending_chat', txt);
-            socket.emit('sending_chat', txt);
-        });
-        
-        socket.on('live_write', function(data){
-            writing = data.text;
-            console.log("writing on serverSocket: "+writing);
-            socket.broadcast.emit('live_write',{text: writing});
-            socket.emit('live_write', {text: writing});
-        });
-        //disconnect     
-        socket.on('disconnect', function () {
-            --currentPlayers;
-            socket.emit('players', { number: currentPlayers});
-            socket.broadcast.emit('players', { number: currentPlayers});
-            socket.broadcast.emit('welcome', {welcome_msg: "Welcome player, "+currentPlayers});
-        });
-        
-    });
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
 

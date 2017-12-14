@@ -19,13 +19,16 @@ $(document).ready(function(){
                 type: 'POST',
                 data: {filter: updated_user, update: updated_firstname},
                 success: function(result){
-                    console.log("updated user");  
+                    console.log("updated user");
+                    $('#edit_msg').text('updated!')  
                 },
                 error: function(response, status) {
                     console.log('didnt find user');
                 }
             });
             event.preventDefault();
+            $('#orig_username').val("");
+            $('#edit_firstName').val("");
     }
 
     function deleteCard(event){

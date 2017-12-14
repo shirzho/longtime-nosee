@@ -9,7 +9,6 @@
     "node": ">=0.10"
   },
   "dependencies": {
-    "bootstrap": "^4.0.0-alpha.6",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
     "express-session": "^1.15.6",

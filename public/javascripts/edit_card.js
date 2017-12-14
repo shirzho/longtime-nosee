@@ -18,7 +18,6 @@ $(function () {
 //save an old card (UPDATE) you created w another user
 function saveUpdateCard(event){
   var card = $('#card').val();
-  console.log("THIS IS CARD VAL FOR EDIT CARD "+ card);
   var cardName = $('#findByCardName').val();
   //var buddyName = $('#buddyName').val();
   $.ajax({

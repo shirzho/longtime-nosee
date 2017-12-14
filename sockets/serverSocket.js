@@ -30,7 +30,6 @@ exports.initSockets = function(io) {
         //for title
         socket.on('live_write_title', function(data){
             writing = data.title;
-            console.log("title writing on serverSocket: "+writing);
             socket.broadcast.emit('live_write_title',{title: writing});
             socket.emit('live_write_title', {title: writing});
         });
