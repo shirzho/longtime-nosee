@@ -4,13 +4,21 @@
     <script src="../socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="javascripts/new_live_card_socket.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Catamaran:bold" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/live_cards.css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
 <body>
+    <div class="topnav">
+        <a href="home">Home</a>
+        <a href="live_cards">Cards</a>
+        <a class="active" href="new_live_card">Create new card</a>
+        <a href="/logout">Logout</a>
+    </div>
     <p> There are currently <span id="numPlayers">no other</span> users online.</p>
     <p>  <span id="welcome"></span></p>
     <p> Name your card (it will be saved with this name)</p>
-    <input type="text" id="cardName">
+    <textarea id="cardName" rows="1" cols="30" placeholder="title"></textarea>
     <br><br>
     <textarea id="card" rows ="15" cols = "30" placeholder="pressing spacebar sends the text you wrote live to other users"></textarea> 
     <br>
@@ -35,5 +43,6 @@
         <input type="text" id="buddyName">
         <input id= 'getBuddyName' type = "submit">
     </div>
+    <p><span id="successmsg"></span></p>
 </body>
 </html>

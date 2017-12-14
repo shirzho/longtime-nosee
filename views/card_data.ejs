@@ -1,8 +1,9 @@
+<link rel="stylesheet" type="text/css" href="css/index.css">
 <table>
     <tr>
         <th>Card Name</th>
-        <th>Card Content</th>
         <th>User Pair</th>
+        <th>Card Content</th>
         
     </tr>
     <% if (obj.length) { %>
@@ -12,14 +13,12 @@
                 <td>
                     <%= livecard.cardName %>
                 </td>
-                <td>
-                    <%= livecard.cardContent%>
-                </td>
+
                 <td>
                     <%= livecard.pair %>
                 </td>
                 <td>
-                    <button>Edit  <%= livecard.cardName %> </button>
+                    <%= livecard.cardContent %>
                 </td>
             </tr>
         <% }; %>

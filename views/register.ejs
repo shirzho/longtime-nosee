@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="javascripts/users.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
+    <link href="https://fonts.googleapis.com/css?family=Catamaran:bold" rel="stylesheet">
+    <title>Register</title>
+</head>
+<body>
+<center>
+    <div class="bottom">
+        
+        <form id='register'>
+            <h1>Registration</h1>
+            First Name: <br><input id= 'firstName' type="text", autocomplete="off"><br>
+            Last Name: <br><input id= 'lastName' type="text", autocomplete="off" ><br>
+            Username: <br><input id = 'userName' type="text", autocomplete="off"><br>
+            Password: <br><input id= 'passwd' type = "password", autocomplete="off"><br>
+            <input id= 'createUser' type = "submit">
+
+            <h4><a href="login">Login here</a></h4>
+        </form>
+
+        <p><span id="reg_msg"></span></p>
+    </div>
+</center>
+</body>
+</html>

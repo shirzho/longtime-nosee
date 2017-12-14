@@ -12,6 +12,15 @@ userNsp_socket.on('live_write', function(data){
     $("#card").val(data.text);
 });
 
+userNsp_socket.on('live_write_title', function(data){
+    $("#cardName").val(data.title);
+});
+
+userNsp_socket.on('clear_text', function(data){
+    $("#cardName").val(data.text);
+    $('#card').val(data.text);
+});
+
 userNsp_socket.on('sending_chat', function(txt){
     document.getElementById("overlay_screen").style.display = "block";
     $("#message").append(txt+ "<br>");
@@ -22,7 +31,11 @@ userNsp_socket.on('sending_chat', function(txt){
 $(function () {
   $("#infoForSave").children().hide();
 
-
+  $("#cardName").keyup(function(){
+        var writing = $('#cardName').val();
+        userNsp_socket.emit('live_write_title', {title: writing});
+    
+  });
   $("#card").keyup(function(e){
     if (e.which==32){ //key for spacebar
         var writing = $('#card').val();
@@ -78,13 +91,20 @@ function saveNewCard(event){
           type: 'PUT',
           data: {"cardName":cardName, "cardContent": card, "pair" : buddyName},
           success: function(result){
-                    console.log("created new card");  
+                    console.log("created new card"); 
+                    $("#successmsg").text("You have saved the card to the database!"); 
+                    
                 },
           error: function(response, status) {
+                    $("#successmsg").text("saving card failed."); 
                     console.log('could not create card');
                 }
         });
         event.preventDefault();
+        $("#card" ).val("");
+        $("#cardName" ).val("");
+        var blank = "";
+        userNsp_socket.emit('clear_text', {text: blank});
 }
 
 

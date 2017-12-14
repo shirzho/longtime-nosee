@@ -1,4 +1,4 @@
-exports.init = function(io) {
+exports.initSockets = function(io) {
     var currentPlayers = 0; // keep track of the number of players
     var msg;
     var seconds=0;
@@ -21,13 +21,23 @@ exports.init = function(io) {
             socket.broadcast.emit('sending_chat', txt);
             socket.emit('sending_chat', txt);
         });
-        
+        //for textarea
         socket.on('live_write', function(data){
             writing = data.text;
-            console.log("writing on serverSocket: "+writing);
             socket.broadcast.emit('live_write',{text: writing});
             socket.emit('live_write', {text: writing});
         });
+        //for title
+        socket.on('live_write_title', function(data){
+            writing = data.title;
+            console.log("title writing on serverSocket: "+writing);
+            socket.broadcast.emit('live_write_title',{title: writing});
+            socket.emit('live_write_title', {title: writing});
+        });
+        socket.on('clear_text', function(data){
+            socket.broadcast.emit('clear_text', {text: data.text});
+            socket.emit('clear_text', {text: data.text});
+        })
         //disconnect     
         socket.on('disconnect', function () {
             --currentPlayers;

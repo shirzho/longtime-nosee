@@ -2,49 +2,26 @@
 <html>
 <head>
 	<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-	<!-- <script src="../sockets/socket.io/socket.io.js"></script> -->
-	<script src="javascripts/users.js"></script>
+    <!-- <script src="javascripts/index.js"></script> -->
+	<link href="https://fonts.googleapis.com/css?family=Catamaran:bold" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="css/index.css">
+
+	<title>Long Time No See</title>
 </head>
 	<body>
-        <h1>Register Here</h1>
-        <br>
-        <form id='register'>
-            First Name: <br><input id= 'firstName' type="text", autocomplete="off"><br>
-            Last Name: <br><input id= 'lastName' type="text", autocomplete="off" ><br>
-            Username: <br><input id = 'userName' type="text", autocomplete="off"><br>
-            Password: <br><input id= 'passwd' type = "text", autocomplete="off"><br>
-            <input id= 'createUser' type = "submit">
-        </form>
+        <div class="top">
+            <h1>Long time no see.</h1>
+        </div>
+        <div class="bottom">
+            <h4><a href="login">Login here</a> &nbsp; &nbsp;
+            <a href="register">Register Here</a></h4>
 
-    <p>output<span id="reg_msg"></span></p>
-    
-    <a href="login">Login here (after registering)</a>
-        <!-- <form id='login'>
-            Username: <br><input id = 'login_userName' type="text", autocomplete="off"><br>
-            Password: <br><input id= 'login_passwd' type = "text", autocomplete="off"><br>
-            <input id= 'loginUser' type = "submit">
-        </form>
-        <p><span id="login_msg"></span></p> -->
-
-    <!-- <form id='edit_user'>
-        <h2>Edit user info:</h2>
-        please insert your current username here: 
-        <br><input id="orig_username" type="text", autocomplete="off"><br>
-        <p>this is what you want to change:</p>
-            First Name: <br><input id= 'edit_firstName' type="text", autocomplete="off"><br>
-            Last Name: <br><input id= 'lastName' type="text", autocomplete="off" ><br>
-            <input id= 'editUser' type = "submit">
-        </form>
-        <p>output<span id="edit_msg"></span></p> -->
+        </div>
+       
 
 
+        
 
-   <!--  <h1> Delete an existing user here</h1>
-    <form id="delete">
-        username: <br><input id= 'deleted_username' type="text", autocomplete="off"><br>
-        <input id= 'deleteUser' type = "submit">
-    </form>
-    <p><span id="delete_msg"></span></p> -->
 
 
 	</body>

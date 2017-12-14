@@ -1,0 +1,58 @@
+body, html {
+    position: relative;
+    height: 100%;
+    font-size: 13px;
+    font-family: 'Catamaran', sans-serif;
+}
+
+.top{
+    height: 50%;
+}
+.top h1{ 
+    text-align: center;
+    font-family:'Catamaran' !important, sans-serif;
+    font-size: 50px;
+    font-weight: bold;
+    padding-left: : auto;
+    padding-right: auto;
+    padding-top: 20%;
+    
+}
+
+.bottom {
+    font-family: 'Source Sans Pro', sans-serif; 
+    height: 10%;
+    box-sizing: border-box;  
+    padding: auto;
+
+}
+.bottom h4 a {
+    text-decoration: none;
+    color: black;
+}
+
+.bottom h4 a:hover {
+    text-decoration: underline;
+}
+.bottom h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+    text-align: center;
+    text-decoration: none;
+    vertical-align: bottom;
+    padding-top: 0%;
+    word-spacing: 10%;
+}
+
+/*.register_partial {
+
+    height: 40%;
+    float: center;
+    width: 50%;
+    
+}
+.login_partial {
+    height: 40%;
+    float: center;
+    width: 50%;
+   
+}*/

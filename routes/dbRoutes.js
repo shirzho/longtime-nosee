@@ -7,7 +7,9 @@ exports.init = function(app){
     app.get('/', index); // The login page currently, misleading name lol
     
     //app.get('/live_cards', live_cards);
-   
+    app.get('/register', function(req,res){
+      res.render('register');
+    })
     app.get('/home', checkAuthentication, homePath);
     //app.get('/home', function(req,res){res.render('home')});
     app.get('/live_cards', checkAuthentication,liveCardsPath);
@@ -198,8 +200,8 @@ doUpdate = function(req, res){
     console.log("DSKFJDSLKJFL "+ JSON.stringify(filter));
     var update =   {"$set":{"firstname":req.body.update}};//JSON.parse(req.body.update);
     console.log("THIS IS REQ BODY:" +JSON.stringify(req.body));
-  }
-  if (req.params.collection=="livecards"){
+  }else{
+    if (req.params.collection=="livecards" && req.body.update.cardName){
     console.log("THIS IS REQ BODY:" +JSON.stringify(req.body.update));
     var key = req.body.update.cardName
     var update = {"$set":{cardContent: req.body.update.card, cardName : req.body.update.cardName}};
@@ -208,7 +210,13 @@ doUpdate = function(req, res){
     newFilter = newFilter.sort();
     console.log("new filter "+newFilter);
     var filter = {"pair": newFilter};
+  }else{
+    console.log("INSIDE DBROUTES this is req.body.update.card"+ JSON.stringify(req.body.update));
+    var update = {"$set":{cardContent: req.body.update}};
+    var filter = {"cardName": req.body.filter};
   }
+  }
+  
   
   /*
    * Call the model Update with:

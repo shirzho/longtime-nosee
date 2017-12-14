@@ -4,10 +4,19 @@
     <script src="../socket.io/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="javascripts/live_cards.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Catamaran:bold" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/live_cards.css">
+    <link rel="stylesheet" type="text/css" href="css/styles.css">
     <title>Edit Cards</title>
 </head>
 <body>
+    <div class="topnav">
+        <a href="home">Home</a>
+        <a class="active" href="live_cards">Cards</a>
+        <a href="new_live_card">Create new card</a>
+        <a href="/logout">Logout</a>
+    </div>
+
     <p>Retrieve all cards made with this user:</p>
     <form id='getByUser'>
         username:

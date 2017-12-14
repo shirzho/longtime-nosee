@@ -1,0 +1,54 @@
+body, html {
+    position: relative;
+    height: 100%;
+    font-size: 13px;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+h1 {
+  font-family: 'Catamaran', sans-serif;
+}
+h2 {
+  font-family: 'Catamaran', sans-serif;
+}
+.topnav {
+  overflow: hidden;
+  background-color: black;
+}
+
+.topnav a {
+  float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 12px 14px;
+  text-decoration: none;
+  font-size: 15px;
+  font-family: 'Catamaran', sans-serif;
+}
+
+.topnav a:hover {
+  background-color: white;
+  color: black;
+}
+
+.topnav a.active {
+  background-color: white;
+  color: black;
+}
+
+.button {
+    font-family: inherit;
+    border-radius: 7px;
+    text-decoration: none;
+    border: none;
+    /*box-shadow: 1px 1px 1px #696969;*/
+}
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+

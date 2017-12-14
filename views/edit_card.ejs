@@ -1,31 +1,19 @@
-<script src="javascripts/live_cards.js"></script>
+<script src="javascripts/edit_card.js"></script>
+<link rel="stylesheet" type="text/css" href="css/styles.css">
+
 <% if (obj.length) { %>
         <% for(var i = 0; i < obj.length; i++) { %>
             <% var livecard = obj[i]%>
-            <p> Name your card (it will be saved with this name)</p>
             <h2 id="cardName"> <%=livecard.cardName%> </h2>
             <br>
             <textarea id="card" rows ="15" cols = "30" placeholder="pressing spacebar sends the text you wrote live to other users"><%= livecard.cardContent %></textarea> 
             <br>
             <button id= 'save'>save card</button>
 
-            <div id="overlay_screen">
-                <div id="overlay">
-                    <p id="message"></p>
-                    <input id= 'chatbox' type = "text", autocomplete="off">
-                    <button id= 'sendchat'>send</button>
-                    <br>
-                    <button id="quit">close</button>
-                </div>        
-            </div>
 
             <button id='chat'>chat!</button>
             <br>
-            <div id = "infoForSave">
-                <p> Enter your buddy's username:</p>
-                <input type="text" id="buddyName">
-                <input id= 'getBuddyName' type = "submit">
-            </div>
+            
         <% }; %>
     <% } %>
 
